@@ -1,7 +1,7 @@
 // Validation interface
 interface Validatable {
-    required: boolean,
     value: string | number,
+    required?: boolean,
     min?: number,
     max?: number,
     minLength?: number,
@@ -16,25 +16,25 @@ const validate = (validatableInput: Validatable) => {
         isValid = isValid && validatableInput.value.toString().length !== 0;
     }
     if (
-        validatableInput.minLength !== null &&
+        validatableInput.minLength != null &&
         typeof validatableInput.value == 'string'
     ) {
         isValid = isValid && validatableInput.value.length >= validatableInput.minLength;
     }
     if (
-        validatableInput.maxLength !== null &&
+        validatableInput.maxLength != null &&
         typeof validatableInput.value == 'string'
     ) {
         isValid = isValid && validatableInput.value.length <= validatableInput.maxLength;
     }
     if (
-        validatableInput.min !== null &&
+        validatableInput.min != null &&
         typeof validatableInput.value == "number"
     ) {
         isValid = isValid && validatableInput.value >= validatableInput.min
     }
     if (
-        validatableInput.max !== null &&
+        validatableInput.max != null &&
         typeof validatableInput.value == "number"
     ) {
         isValid = isValid && validatableInput.value <= validatableInput.max
@@ -91,23 +91,23 @@ class ProjectInput {
         const enteredDescription = this.descriptionInputElement.value
         const enteredPeople = this.peopleInputElement.value
      
-        const titleValidate = {
+        const titleValidate:Validatable = {
             value : enteredTitle,
-            minLength: 5,
-            maxLength: 15,
+            minLength: 2,
+            maxLength: 16,
             required:true
         }
 
-        const descriptionValidate = {
+        const descriptionValidate:Validatable = {
             value: enteredDescription,
-            minLength: 10,
+            minLength: 2,
             required:false
         }
 
-        const peopleValidate = {
+        const peopleValidate:Validatable = {
             value: +enteredPeople,
             min: 1,
-            max: 5,
+            max: 10,
             required:true
         }
      
@@ -116,7 +116,7 @@ class ProjectInput {
             !validate(descriptionValidate) ||
             !validate(peopleValidate)
         ) {
-            alert('Please try again')
+            alert('Validation failed')
         } else {
             return [enteredTitle, enteredDescription, +enteredPeople]
         }
