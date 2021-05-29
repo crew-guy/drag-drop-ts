@@ -6,6 +6,7 @@
 /// <reference path="./components/project-list.ts" />
 /// <reference path="./state/project-state.ts" />
 /// <reference path="./utils/validation.ts" />
+/// <reference path="./decorators/autobind.ts" />
 
 namespace App{
     new ProjectInput()

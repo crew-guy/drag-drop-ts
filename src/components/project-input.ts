@@ -1,4 +1,9 @@
-/// <reference path="base-component.ts"/>
+/// <reference path="base-component.ts" />
+/// <reference path="../utils/validation.ts" />
+/// <reference path="../state/project-state.ts" />
+/// <reference path="../models/project.ts" />
+/// <reference path="../decorators/autobind.ts" />
+
 
 namespace App {
     // Project input class
@@ -67,7 +72,6 @@ namespace App {
         @Autobind
         private submitHandler(e:Event) {
             e.preventDefault()
-            console.log(this.titleInputElement.value)
             const userInput = this.gatherUserInput()
             if (Array.isArray(userInput)) {
                 const [title, description, people] = userInput
