@@ -42,6 +42,32 @@ const validate = (validatableInput: Validatable) => {
     return isValid
 }
 
+class ProjectList {
+    hostElement: HTMLDivElement;
+    templateElement: HTMLTemplateElement;
+    element: HTMLElement;
+
+    constructor(private type : 'active' | 'finished') {
+        this.hostElement = document.querySelector('#app')! as HTMLDivElement;
+        this.templateElement = document.querySelector('#project-list')! as HTMLTemplateElement;
+        
+        const importedNode = document.importNode(this.templateElement.content, true)
+        this.element = importedNode.firstElementChild as HTMLElement;
+        this.element.id = `${this.type}-projects`
+        this.attach()
+        this.renderContent()
+    }
+    private renderContent() {
+        const listId = `${this.type}-projects-list`
+        this.hostElement.querySelector('ul')!.id = listId
+        this.hostElement.querySelector('h2')!.textContent = `${this.type.toUpperCase()} PROJECTS`
+    }
+
+    private attach() {
+        this.hostElement.insertAdjacentElement('beforeend', this.element)
+    }
+}
+
 
 // Autobind decorator
 function Autobind(
