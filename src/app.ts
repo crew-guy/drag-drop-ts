@@ -59,8 +59,8 @@ class ProjectList {
     }
     private renderContent() {
         const listId = `${this.type}-projects-list`
-        this.hostElement.querySelector('ul')!.id = listId
-        this.hostElement.querySelector('h2')!.textContent = `${this.type.toUpperCase()} PROJECTS`
+        this.element.querySelector('ul')!.id = listId
+        this.element.querySelector('h2')!.textContent = `${this.type.toUpperCase()} PROJECTS`
     }
 
     private attach() {
@@ -175,6 +175,35 @@ class ProjectInput {
     }
 }
 
+class ProjectState {
+    private projects: any[] = []
+    private static instance:ProjectState
+
+    private constructor() {
+        
+    }
+
+    static getInstance() {
+        if (this.instance)
+            return this.instance
+        this.instance = new ProjectState()
+        return this.instance
+    }
+
+
+    addProject(title: string, description: string, numOfPeople: number) {
+        const newProject = {
+            id: Math.random().toString(),
+            title,
+            description,
+            people:numOfPeople
+        }
+        this.projects.push(newProject)
+    }
+
+}
+
 const prjInput = new ProjectInput()
 const activePrjList = new ProjectList('active')
 const finishedPrjList = new ProjectList('finished')
+const projectState = ProjectState.getInstance()
