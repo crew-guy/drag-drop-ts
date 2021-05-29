@@ -17,6 +17,64 @@ class Project {
     }
 }
 
+class ProjectItem {
+    
+}
+
+
+// Type of listener functions
+type Listener<T> = (projects:T[]) => void
+
+class State<T> {
+    protected listeners: T[]
+    
+    constructor() {
+        this.listeners = [] 
+    }
+
+    addListener(listenerFn: T) {
+        this.listeners.push(listenerFn)
+    }
+}
+
+class ProjectState extends State<Listener<Project>>{
+    private projects: Project[] = []
+    private static instance:ProjectState
+
+    private constructor() {
+        super()        
+    }
+
+    static getInstance() {
+        if (this.instance)
+            return this.instance
+        this.instance = new ProjectState()
+        return this.instance
+    }
+
+    addProject(title: string, description: string, numOfPeople: number) {
+        const newProject = new Project(
+            Math.random().toString(),
+            title,
+            description,
+            numOfPeople,
+            ProjectStatus.Active
+        )
+        this.projects.push(newProject)
+        for (const listenerFn of this.listeners) {
+            // Pass to this listener function a copy of the state that this class is managing i.e. the "projects" list
+            // We call "slice" to return a copy of the array and not the original "array" to make the "projects" list to :
+            // 1. make the state uneditable from the place the listener function is coming from
+            // 2. ensure that if we push something to it from inside, state would change everywhere else in the app but these places would not really notice that had changed
+            listenerFn(this.projects.slice())
+        }
+    }
+
+}
+
+const projectState = ProjectState.getInstance()
+
+
 // Validation interface
 interface Validatable {
     value: string | number,
@@ -60,51 +118,6 @@ const validate = (validatableInput: Validatable) => {
     }
     return isValid
 }
-
-
-type Listener = (projects:Project[]) => void
-
-class ProjectState {
-    private listeners:Listener[] = []
-    private projects: Project[] = []
-    private static instance:ProjectState
-
-    private constructor() {
-        
-    }
-
-    static getInstance() {
-        if (this.instance)
-            return this.instance
-        this.instance = new ProjectState()
-        return this.instance
-    }
-
-    addListeners(listenerFn: Listener) {
-        this.listeners.push(listenerFn)
-    }
-
-    addProject(title: string, description: string, numOfPeople: number) {
-        const newProject = new Project(
-            Math.random().toString(),
-            title,
-            description,
-            numOfPeople,
-            ProjectStatus.Active
-        )
-        this.projects.push(newProject)
-        for (const listenerFn of this.listeners) {
-            // Pass to this listener function a copy of the state that this class is managing i.e. the "projects" list
-            // We call "slice" to return a copy of the array and not the original "array" to make the "projects" list to :
-            // 1. make the state uneditable from the place the listener function is coming from
-            // 2. ensure that if we push something to it from inside, state would change everywhere else in the app but these places would not really notice that had changed
-            listenerFn(this.projects.slice())
-        }
-    }
-
-}
-
-const projectState = ProjectState.getInstance()
 
 abstract class Component<T extends HTMLElement, U extends HTMLElement>{
     hostElement: T;
@@ -153,7 +166,7 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
         this.renderContent()
     }
     configure() {
-        projectState.addListeners((projects:Project[]) => {
+        projectState.addListener((projects:Project[]) => {
             const relevantProjects = projects.filter((prj: Project) => {
                 if (this.type == 'active') {
                     return prj.status === ProjectStatus.Active
